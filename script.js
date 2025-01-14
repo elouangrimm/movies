@@ -13,7 +13,7 @@ document.getElementById('redirectBtn').addEventListener('click', function() {
     const imdbCode = document.getElementById('imdbCode').value.trim();
   
     if (imdbCode) {
-      const url = `https://vidsrc.in/embed/movie?imdb=${imdbCode}`;
+      const url = `https://vidsrc.in/embed/${imdbCode}/color-3700b3`;
       window.location.href = url;
     } else {
       alert('Please enter a valid IMDb code.');
