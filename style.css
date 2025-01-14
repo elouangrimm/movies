@@ -30,6 +30,10 @@
     color: #fff;
   }
   
+  a {
+    color: #6200ea;
+  }
+
   input {
     width: 100%;
     padding: 15px;
