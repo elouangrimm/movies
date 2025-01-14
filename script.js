@@ -4,7 +4,7 @@ document.getElementById('redirectBtn').addEventListener('click', function() {
   
   document.getElementById('imdbCode').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
-      event.preventDefault(); 
+      event.preventDefault();
       redirectToVidSrc();
     }
   });
@@ -18,4 +18,5 @@ document.getElementById('redirectBtn').addEventListener('click', function() {
     } else {
       alert('Please enter a valid IMDb code.');
     }
-  }  
+  }
+  
