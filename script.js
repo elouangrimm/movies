@@ -80,16 +80,9 @@ function displaySuggestionsOMDb(results) {
         // Store IMDb ID directly, no need for a second fetch!
         item.dataset.imdbId = result.imdbID;
 
-        // Handle cases where Poster is "N/A"
-        const posterUrl =
-            result.Poster && result.Poster !== "N/A"
-                ? result.Poster
-                : "https://via.placeholder.com/45x68.png?text=No+Image"; // Placeholder
-
         const type = result.Type ? ` (${result.Type})` : ""; // Add type (movie/series)
 
         item.innerHTML = `
-            <img src="${posterUrl}" alt="Poster for ${result.Title}" onerror="this.onerror=null; this.src='https://via.placeholder.com/45x68.png?text=Error';">
             <div class="suggestion-info">
                 <span class="suggestion-title">${result.Title}</span>
                 <span class="suggestion-year">${result.Year}${type}</span>
