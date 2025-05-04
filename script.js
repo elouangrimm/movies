@@ -31,7 +31,7 @@ async function fetchSuggestionsOMDb(query) {
     // Use OMDb's search ('s=') parameter
     const url = `${OMDb_BASE_URL}?apikey=${OMDb_API_KEY}&s=${encodeURIComponent(
         query
-    )}&type=movie,series`; // Search movies and series
+    )}`; // Search movies and series
 
     try {
         const response = await fetch(url);
