@@ -2,7 +2,7 @@ const searchInput = document.getElementById("movieSearch");
 const suggestionsContainer = document.getElementById("suggestions");
 
 // --- IMPORTANT: Replace with your actual OMDb API Key ---
-const OMDb_API_KEY = "YOUR_OMDB_API_KEY"; // Get yours from omdbapi.com/apikey.aspx
+const OMDb_API_KEY = "2a319841"; // Get yours from omdbapi.com/apikey.aspx
 // ---------------------------------------------------------
 
 const OMDb_BASE_URL = "https://www.omdbapi.com/";
