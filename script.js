@@ -1,9 +1,7 @@
 const searchInput = document.getElementById("movieSearch");
 const suggestionsContainer = document.getElementById("suggestions");
 
-// --- IMPORTANT: Replace with your actual OMDb API Key ---
-const OMDb_API_KEY = "2a319841"; // Get yours from omdbapi.com/apikey.aspx
-// ---------------------------------------------------------
+const OMDb_API_KEY = "2a319841";
 
 const OMDb_BASE_URL = "https://www.omdbapi.com/";
 
@@ -125,6 +123,7 @@ function redirectToVidSrc(imdbCode) {
     // Basic validation (IMDb IDs start with 'tt' followed by numbers)
     if (imdbCode && imdbCode.startsWith("tt") && imdbCode.length > 2) {
         const url = `https://vidsrc.in/embed/${imdbCode}/color-3700b3`;
+        posthog.capture("movie watched")
         console.log(`Redirecting to: ${url}`);
         window.location.href = url;
     } else {
