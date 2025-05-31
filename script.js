@@ -64,7 +64,7 @@ function displaySuggestionsOMDb(results) {
         return;
     }
 
-    const limitedResults = results.slice(0, 7); // Limit to 7 results
+    const limitedResults = results.slice(0, 6); // Limit to 6 results
 
     limitedResults.forEach((result) => {
         // OMDb provides imdbID directly in search results!
@@ -111,19 +111,21 @@ function handleSuggestionClickOMDb(event) {
         searchInput.value = selectedTitle; // Update input field (optional UX)
         suggestionsContainer.innerHTML = ""; // Clear suggestions
         suggestionsContainer.style.display = "none";
-        redirectToVidSrc(imdbId); // Call your redirect function
+        redirectToVidSrc(imdbId, selectedTitle); // Call your redirect function
     } else {
         console.error("Could not find IMDb ID in the selected item's data.");
         alert("Error: Could not get IMDb ID for this selection.");
     }
 }
 
-// --- Your Original Redirect Function (Accepts IMDb code as argument) ---
-function redirectToVidSrc(imdbCode) {
+function redirectToVidSrc(imdbCode, selectedTitle) {
     // Basic validation (IMDb IDs start with 'tt' followed by numbers)
     if (imdbCode && imdbCode.startsWith("tt") && imdbCode.length > 2) {
         const url = `https://vidsrc.in/embed/${imdbCode}/color-3700b3`;
-        posthog.capture("movie watched")
+        posthog.capture("movie watched", {
+            code: imdbCode,
+            title: selectedTitle
+        })
         console.log(`Redirecting to: ${url}`);
         window.location.href = url;
     } else {
