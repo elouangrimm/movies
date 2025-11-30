@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         type = "tv";
     }
 
-    videoPlayer.setAttribute("sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts");
+    videoPlayer.setAttribute("sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-presentation allow-modals allow-top-navigation-by-user-activation");
 
     if (imdbId) {
         if (type === "tv") {
