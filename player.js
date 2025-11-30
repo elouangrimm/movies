@@ -24,11 +24,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         type = "tv";
     }
 
-    // This sandbox configuration is a balance between security and functionality.
-    // It is restrictive to prevent popups and redirects, but may still be too
-    // restrictive for some video players.
-    videoPlayer.setAttribute("sandbox", "allow-forms allow-scripts allow-same-origin allow-pointer-lock allow-presentation allow-modals");
-
     if (imdbId) {
         if (type === "tv") {
             seriesControls.style.display = "flex";
