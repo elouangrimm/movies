@@ -1,12 +1,8 @@
 const searchInput = document.getElementById("movieSearch");
 const suggestionsContainer = document.getElementById("suggestions");
 
-const OMDb_API_KEY = "2a319841";
-
 const OMDb_BASE_URL = "https://www.omdbapi.com/";
 
-// --- Debounce Function ---
-// Prevents API calls on every keystroke
 let debounceTimeout;
 function debounce(func, delay) {
     return function (...args) {
@@ -17,19 +13,16 @@ function debounce(func, delay) {
     };
 }
 
-// --- Fetch Suggestions from OMDb ---
 async function fetchSuggestionsOMDb(query) {
     if (!query || query.length < 3) {
-        // OMDb generally needs ~3 chars
         suggestionsContainer.innerHTML = "";
         suggestionsContainer.style.display = "none";
         return;
     }
 
-    // Use OMDb's search ('s=') parameter
     const url = `${OMDb_BASE_URL}?apikey=${OMDb_API_KEY}&s=${encodeURIComponent(
         query
-    )}`; // Search movies and series
+    )}`;
 
     try {
         const response = await fetch(url);
@@ -38,13 +31,11 @@ async function fetchSuggestionsOMDb(query) {
         }
         const data = await response.json();
 
-        // Check OMDb's specific response format
         if (data.Response === "True" && data.Search) {
             displaySuggestionsOMDb(data.Search);
         } else {
-            // Handle cases like "Movie not found!" or other errors
             console.log("OMDb API Response:", data.Error || "No results found");
-            suggestionsContainer.innerHTML = ""; // Clear previous potentially wrong suggestions
+            suggestionsContainer.innerHTML = "";
             suggestionsContainer.style.display = "none";
         }
     } catch (error) {
@@ -55,30 +46,27 @@ async function fetchSuggestionsOMDb(query) {
     }
 }
 
-// --- Display Suggestions from OMDb ---
 function displaySuggestionsOMDb(results) {
-    suggestionsContainer.innerHTML = ""; // Clear previous suggestions
+    suggestionsContainer.innerHTML = "";
 
     if (!results || results.length === 0) {
         suggestionsContainer.style.display = "none";
         return;
     }
 
-    const limitedResults = results.slice(0, 6); // Limit to 6 results
+    const limitedResults = results.slice(0, 6);
 
     limitedResults.forEach((result) => {
-        // OMDb provides imdbID directly in search results!
         if (!result.imdbID || !result.Title || !result.Year) {
-            return; // Skip results missing essential info
+            return;
         }
 
         const item = document.createElement("div");
         item.classList.add("suggestion-item");
-
-        // Store IMDb ID directly, no need for a second fetch!
         item.dataset.imdbId = result.imdbID;
+        item.dataset.type = result.Type;
 
-        const type = result.Type ? ` (${result.Type})` : ""; // Add type (movie/series)
+        const type = result.Type ? ` (${result.Type})` : "";
 
         item.innerHTML = `
             <div class="suggestion-info">
@@ -87,9 +75,7 @@ function displaySuggestionsOMDb(results) {
             </div>
         `;
 
-        // Add click listener to redirect using the stored IMDb ID
         item.addEventListener("click", handleSuggestionClickOMDb);
-
         suggestionsContainer.appendChild(item);
     });
 
@@ -97,52 +83,45 @@ function displaySuggestionsOMDb(results) {
         limitedResults.length > 0 ? "block" : "none";
 }
 
-// --- Handle Suggestion Click (OMDb version) ---
 function handleSuggestionClickOMDb(event) {
     const selectedItem = event.target.closest(".suggestion-item");
     if (!selectedItem) return;
 
-    const imdbId = selectedItem.dataset.imdbId; // Get IMDb ID directly
+    const imdbId = selectedItem.dataset.imdbId;
+    const type = selectedItem.dataset.type;
     const selectedTitle =
         selectedItem.querySelector(".suggestion-title").textContent;
 
     if (imdbId) {
-        console.log(`Selected IMDb ID: ${imdbId}`);
-        searchInput.value = selectedTitle; // Update input field (optional UX)
-        suggestionsContainer.innerHTML = ""; // Clear suggestions
+        searchInput.value = selectedTitle;
+        suggestionsContainer.innerHTML = "";
         suggestionsContainer.style.display = "none";
-        redirectToVidSrc(imdbId, selectedTitle); // Call your redirect function
+        redirectToPlayer(imdbId, type);
     } else {
         console.error("Could not find IMDb ID in the selected item's data.");
         alert("Error: Could not get IMDb ID for this selection.");
     }
 }
 
-function redirectToVidSrc(imdbCode, selectedTitle) {
-    // Basic validation (IMDb IDs start with 'tt' followed by numbers)
-    if (imdbCode && imdbCode.startsWith("tt") && imdbCode.length > 2) {
-        const url = `https://vidsrc.in/embed/${imdbCode}/color-3700b3`;
-        posthog.capture("movie watched", {
-            code: imdbCode,
-            title: selectedTitle
-        })
-        console.log(`Redirecting to: ${url}`);
-        window.location.href = url;
-    } else {
-        console.error(`Invalid IMDb code provided for redirect: ${imdbCode}`);
-        alert("An error occurred: Invalid IMDb code format.");
+function redirectToPlayer(imdbCode, type) {
+    posthog.capture("movie_selected", {
+        imdb_id: imdbCode,
+        type: type,
+    });
+    let url = `player.html?id=${imdbCode}&type=${type}`;
+    if (type === 'series') {
+        url += '&season=1&episode=1';
     }
+    window.location.href = url;
 }
 
-// --- Event Listener for Search Input ---
 searchInput.addEventListener(
     "input",
     debounce((event) => {
         fetchSuggestionsOMDb(event.target.value);
     }, 350)
-); // 350ms delay
+);
 
-// --- Optional: Hide suggestions when clicking outside ---
 document.addEventListener("click", (event) => {
     const searchContainer = document.querySelector(".search-container");
     if (searchContainer && !searchContainer.contains(event.target)) {
@@ -152,11 +131,11 @@ document.addEventListener("click", (event) => {
 
 searchInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && suggestionsContainer.children.length > 0) {
-        event.preventDefault(); // Prevent form submission if it were in a form
+        event.preventDefault();
         const firstSuggestion =
             suggestionsContainer.querySelector(".suggestion-item");
         if (firstSuggestion) {
-            handleSuggestionClickOMDb({ target: firstSuggestion }); // Simulate click
+            handleSuggestionClickOMDb({ target: firstSuggestion });
         }
     }
 });
