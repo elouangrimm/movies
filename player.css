@@ -25,8 +25,21 @@ body {
     background-color: #111;
 }
 
-#source-buttons, #navigation-buttons, #series-controls {
+#source-buttons {
     display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none; /* Firefox */
+}
+
+#source-buttons::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+}
+
+#left-controls, #navigation-buttons, #series-controls {
+    display: flex;
+    align-items: center;
     gap: 10px;
 }
 
