@@ -152,6 +152,18 @@ function generateSourceButtons(imdbId, type, season, episode) {
     });
 }
 
+async function getTitle(imdbId) {
+    const url = `${OMDb_BASE_URL}?apikey=${OMDb_API_KEY}&i=${imdbId}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.Title;
+    } catch (error) {
+        console.error("Error fetching title:", error);
+        return "Unknown Title";
+    }
+}
+
 function play(url, index) {
     if (url) {
         videoPlayer.src = url;
@@ -164,6 +176,37 @@ function play(url, index) {
             } else {
                 button.classList.remove("active");
             }
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const imdbId = urlParams.get("id");
+        const type = urlParams.get("type");
+        const season = urlParams.get("season");
+        const episode = urlParams.get("episode");
+
+        getTitle(imdbId).then(title => {
+            const recentlyWatched = JSON.parse(localStorage.getItem("recentlyWatched")) || [];
+            const newItem = {
+                imdbId,
+                type,
+                title,
+                season,
+                episode,
+                watchedAt: new Date().toISOString()
+            };
+
+            const existingIndex = recentlyWatched.findIndex(item => item.imdbId === imdbId && item.season === season && item.episode === episode);
+            if (existingIndex > -1) {
+                recentlyWatched.splice(existingIndex, 1);
+            }
+
+            recentlyWatched.unshift(newItem);
+
+            if (recentlyWatched.length > 3) {
+                recentlyWatched.pop();
+            }
+
+            localStorage.setItem("recentlyWatched", JSON.stringify(recentlyWatched));
         });
     }
 }
