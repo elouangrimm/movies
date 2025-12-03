@@ -24,13 +24,22 @@ const sources = [
 
 let currentSourceIndex = 0;
 
+// --- OVERLAY LOGIC START ---
 videoOverlay.addEventListener("click", () => {
+    // 1. Hide the overlay
     videoOverlay.style.display = "none";
+    
+    // 2. Enable interaction with the iframe now that the user has "activated" the player
+    videoPlayer.style.pointerEvents = "auto";
 });
 
 function resetOverlay() {
+    // Show overlay again
     videoOverlay.style.display = "flex";
+    // Disable iframe interaction immediately so background ads don't trigger on hover
+    videoPlayer.style.pointerEvents = "none";
 }
+// --- OVERLAY LOGIC END ---
 
 document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -183,7 +192,7 @@ async function getTitle(imdbId) {
 
 function play(url, index) {
     if (url) {
-        resetOverlay();
+        resetOverlay(); // Reset overlay and disable pointer events
 
         videoPlayer.src = url;
         currentSourceIndex = index;
