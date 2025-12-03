@@ -4,9 +4,6 @@ const seriesControls = document.getElementById("series-controls");
 const seasonSelect = document.getElementById("season-select");
 const episodeSelect = document.getElementById("episode-select");
 
-// Overlay Elements
-const videoOverlay = document.getElementById("video-overlay");
-
 const OMDb_BASE_URL = "https://www.omdbapi.com/";
 
 // To change the order of preference, simply reorder the lines below.
@@ -23,23 +20,6 @@ const sources = [
 ];
 
 let currentSourceIndex = 0;
-
-// --- OVERLAY LOGIC START ---
-videoOverlay.addEventListener("click", () => {
-    // 1. Hide the overlay
-    videoOverlay.style.display = "none";
-    
-    // 2. Enable interaction with the iframe now that the user has "activated" the player
-    videoPlayer.style.pointerEvents = "auto";
-});
-
-function resetOverlay() {
-    // Show overlay again
-    videoOverlay.style.display = "flex";
-    // Disable iframe interaction immediately so background ads don't trigger on hover
-    videoPlayer.style.pointerEvents = "none";
-}
-// --- OVERLAY LOGIC END ---
 
 document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -72,16 +52,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function getSourceUrl(source, imdbId, type, season, episode) {
     let url;
     if (source.is_special) {
-        try {
-            const response = await fetch(source[type].replace("{imdb_id}", imdbId).replace("{season}", season).replace("{episode}", episode));
-            const text = await response.text();
-            const doc = new DOMParser().parseFromString(text, "text/html");
-            const iframe = doc.querySelector("iframe");
-            url = iframe ? iframe.src : null;
-        } catch (e) {
-            console.error("Error fetching special source", e);
-            url = null;
-        }
+        const response = await fetch(source[type].replace("{imdb_id}", imdbId).replace("{season}", season).replace("{episode}", episode));
+        const text = await response.text();
+        const doc = new DOMParser().parseFromString(text, "text/html");
+        url = doc.querySelector("iframe").src;
     } else {
         if (source[type]) {
             url = source[type]
@@ -192,8 +166,6 @@ async function getTitle(imdbId) {
 
 function play(url, index) {
     if (url) {
-        resetOverlay(); // Reset overlay and disable pointer events
-
         videoPlayer.src = url;
         currentSourceIndex = index;
 
