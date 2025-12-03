@@ -4,6 +4,9 @@ const seriesControls = document.getElementById("series-controls");
 const seasonSelect = document.getElementById("season-select");
 const episodeSelect = document.getElementById("episode-select");
 
+// Overlay Elements
+const videoOverlay = document.getElementById("video-overlay");
+
 const OMDb_BASE_URL = "https://www.omdbapi.com/";
 
 // To change the order of preference, simply reorder the lines below.
@@ -20,6 +23,14 @@ const sources = [
 ];
 
 let currentSourceIndex = 0;
+
+videoOverlay.addEventListener("click", () => {
+    videoOverlay.style.display = "none";
+});
+
+function resetOverlay() {
+    videoOverlay.style.display = "flex";
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -52,10 +63,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function getSourceUrl(source, imdbId, type, season, episode) {
     let url;
     if (source.is_special) {
-        const response = await fetch(source[type].replace("{imdb_id}", imdbId).replace("{season}", season).replace("{episode}", episode));
-        const text = await response.text();
-        const doc = new DOMParser().parseFromString(text, "text/html");
-        url = doc.querySelector("iframe").src;
+        try {
+            const response = await fetch(source[type].replace("{imdb_id}", imdbId).replace("{season}", season).replace("{episode}", episode));
+            const text = await response.text();
+            const doc = new DOMParser().parseFromString(text, "text/html");
+            const iframe = doc.querySelector("iframe");
+            url = iframe ? iframe.src : null;
+        } catch (e) {
+            console.error("Error fetching special source", e);
+            url = null;
+        }
     } else {
         if (source[type]) {
             url = source[type]
@@ -166,6 +183,8 @@ async function getTitle(imdbId) {
 
 function play(url, index) {
     if (url) {
+        resetOverlay();
+
         videoPlayer.src = url;
         currentSourceIndex = index;
 
