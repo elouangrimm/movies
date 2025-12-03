@@ -2,14 +2,22 @@
   "name": "movies.elouan.xyz",
   "short_name": "movies",
   "start_url": ".",
+  "id": "movies.elouan.xyz",
   "display": "fullscreen",
   "orientation": "landscape",
-  "background_color": "#fff",
+  "background_color": "#57534e",
   "theme_color": "#fff",
+  "description": "A minimal, free, and ad-free movie watching app.",
+  "categories": ["entertainment", "movies", "video"],
   "icons": [
     {
-      "src": "https://avatars.githubusercontent.com/u/99371567?v=4",
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
