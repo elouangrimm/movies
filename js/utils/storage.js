@@ -27,6 +27,8 @@ class StorageService {
      * @param {string} item.imdbId - IMDb ID
      * @param {string} item.type - Type (movie or tv)
      * @param {string} item.title - Title
+     * @param {string} [item.year] - Release year
+     * @param {string} [item.poster] - Poster URL
      * @param {string} [item.season] - Season number (for TV shows)
      * @param {string} [item.episode] - Episode number (for TV shows)
      */
@@ -38,6 +40,8 @@ class StorageService {
                 imdbId: item.imdbId,
                 type: item.type,
                 title: item.title,
+                year: item.year,
+                poster: item.poster,
                 season: item.season,
                 episode: item.episode,
                 watchedAt: new Date().toISOString()
