@@ -1,10 +1,53 @@
-body, html {
+:root {
+    --stone-050: #fafaf9;
+    --stone-100: #f5f5f4;
+    --stone-200: #e7e5e4;
+    --stone-300: #d6d3d1;
+    --stone-400: #a8a29e;
+    --stone-500: #78716c;
+    --stone-600: #57534e;
+    --stone-700: #44403c;
+    --stone-800: #292524;
+    --stone-900: #1c1917;
+    --stone-950: #0c0a09;
+
+    --blue: #3b82f6;
+    --red: #ef4444;
+    --green: #22c55e;
+    --amber: #f59e0b;
+
+    --bg: var(--stone-950);
+    --bg-raised: var(--stone-900);
+    --bg-surface: var(--stone-800);
+    --border: var(--stone-800);
+    --border-strong: var(--stone-500);
+    --text: var(--stone-200);
+    --text-muted: var(--stone-400);
+    --text-faint: var(--stone-500);
+    --text-bright: var(--stone-100);
+    --accent: var(--blue);
+    --accent-hover: #5193f8;
+
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", "Roboto Mono", "Cascadia Code", monospace;
+    --line-height: 1.6;
+    --line-height-tight: 1.2;
+}
+
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    border-radius: 0 !important;
+}
+
+body, html {
     height: 100%;
     overflow: hidden;
-    background-color: #000;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: var(--bg);
+    font-family: var(--font-sans);
+    color: var(--text);
+    line-height: var(--line-height);
 }
 
 body {
@@ -22,7 +65,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background-color: #111;
+    background-color: var(--bg-raised);
 }
 
 #source-buttons {
@@ -30,11 +73,11 @@ body {
     gap: 10px;
     overflow-x: auto;
     white-space: nowrap;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
 }
 
 #source-buttons::-webkit-scrollbar {
-    display: none; /* Safari and Chrome */
+    display: none;
 }
 
 #left-controls, #navigation-buttons, #series-controls {
@@ -47,47 +90,52 @@ body {
     padding: 8px 16px;
     font-size: 0.9rem;
     cursor: pointer;
-    border: 1px solid #444;
-    border-radius: 4px;
-    background-color: #222;
-    color: #fff;
+    border: 1px solid var(--border-strong);
+    background-color: var(--bg-surface);
+    color: var(--text);
     text-decoration: none;
+    font-family: inherit;
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .source-button:hover {
-    background-color: #333;
-    border-color: #555;
+    background-color: var(--stone-700);
+    border-color: var(--stone-400);
 }
 
 .source-button.active {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: #fff;
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--stone-050);
 }
 
 .back-button {
     padding: 8px 16px;
     font-size: 0.9rem;
     cursor: pointer;
-    border: 1px solid #444;
-    border-radius: 4px;
+    border: 1px solid var(--border-strong);
     background-color: transparent;
-    color: #fff;
+    color: var(--text);
     text-decoration: none;
+    font-family: inherit;
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .back-button:hover {
-    background-color: #333;
-    border-color: #555;
+    background-color: var(--bg-surface);
+    border-color: var(--stone-400);
 }
 
 select {
     padding: 8px 12px;
     font-size: 0.9rem;
-    border-radius: 4px;
-    background-color: #222;
-    color: #fff;
-    border: 1px solid #444;
+    background-color: var(--bg-surface);
+    color: var(--text-bright);
+    border: 1px solid var(--border-strong);
+    font-family: inherit;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--accent);
 }

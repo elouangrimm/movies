@@ -206,9 +206,9 @@ class PlayerUI {
 
     showError() {
         document.body.innerHTML = `
-            <div style="text-align: center; padding-top: 50px; color: white;">
+            <div style="text-align: center; padding-top: 50px;">
                 <h1>Error: No movie or TV show ID provided.</h1>
-                <a href="index.html" style="color: #3498db; text-decoration: none; font-size: 1.2rem;">Back Home</a>
+                <a href="index.html" style="font-size: 1.2rem;">Back Home</a>
             </div>
         `;
     }
