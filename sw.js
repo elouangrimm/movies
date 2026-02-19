@@ -1,13 +1,21 @@
-const cacheName = 'pwa-cache-v1';
+const cacheName = 'pwa-cache-v2';
 const assetsToCache = [
   '/',
   '/index.html',
   '/style.css',
-  '/script.js',
+  '/index.js',
   '/player.html',
   '/player.css',
   '/player.js',
   '/manifest.json',
+  '/js/analytics/posthog.js',
+  '/js/api/omdb.js',
+  '/js/ui/search.js',
+  '/js/ui/recently-watched.js',
+  '/js/ui/player.js',
+  '/js/utils/common.js',
+  '/js/utils/storage.js',
+  '/js/utils/video-sources.js',
   // Not caching config.js as it may contain sensitive information
 ];
 
