@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <title>Source Tester | elouan.xyz</title>
+    <link rel="stylesheet" href="tester.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Source Tester</h2>
+                <a href="index.html" class="back-link">← Back</a>
+            </div>
+            
+            <div class="imdb-section">
+                <label for="imdb-id">IMDB ID:</label>
+                <input type="text" id="imdb-id" value="tt4772188" placeholder="tt0000000">
+            </div>
+            
+            <div class="type-section">
+                <label>Content Type:</label>
+                <div class="type-buttons">
+                    <button id="type-movie" class="type-button active">Movie</button>
+                    <button id="type-tv" class="type-button">TV Show</button>
+                </div>
+            </div>
+            
+            <div class="episode-section" id="episode-section" style="display: none;">
+                <label for="season-input">Season:</label>
+                <input type="number" id="season-input" value="1" min="1">
+                
+                <label for="episode-input">Episode:</label>
+                <input type="number" id="episode-input" value="1" min="1">
+            </div>
+            
+            <div class="add-source-section">
+                <h3>Add New Source</h3>
+                <label for="source-name">Source Name:</label>
+                <input type="text" id="source-name" placeholder="e.g., vidsrc">
+                
+                <label for="source-url">Source URL Pattern:</label>
+                <textarea id="source-url" placeholder="https://vidsrc-embed.ru/embed/tv?imdb={imdb_id}&season={season}&episode={episode}"></textarea>
+                
+                <button id="add-source-btn" class="add-btn">Add Source</button>
+            </div>
+            
+            <div class="sources-list">
+                <h3>Sources</h3>
+                <div id="sources-container"></div>
+            </div>
+            
+            <div class="export-section">
+                <button id="export-btn" class="export-btn">Export Valid Sources</button>
+            </div>
+        </aside>
+        
+        <main class="content">
+            <div class="iframe-container">
+                <iframe id="source-iframe" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="current-url">
+                <strong>Current URL:</strong> <span id="current-url-display">No source loaded</span>
+            </div>
+        </main>
+    </div>
+    
+    <script src="tester.js"></script>
+</body>
+</html>
