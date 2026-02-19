@@ -188,12 +188,14 @@ class PlayerUI {
 
     async saveToRecentlyWatched() {
         try {
-            const title = await this.omdbService.getTitle(this.currentImdbId);
+            const details = await this.omdbService.getDetails(this.currentImdbId);
             
             this.storageService.addToRecentlyWatched({
                 imdbId: this.currentImdbId,
                 type: this.currentType,
-                title: title,
+                title: details.Title || "Unknown Title",
+                year: details.Year,
+                poster: details.Poster,
                 season: this.currentType === "tv" ? this.currentSeason : undefined,
                 episode: this.currentType === "tv" ? this.currentEpisode : undefined
             });

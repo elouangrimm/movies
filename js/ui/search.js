@@ -83,13 +83,36 @@ class SearchUI {
             item.dataset.type = result.Type;
 
             const type = result.Type ? ` (${result.Type})` : "";
+            const poster = result.Poster && result.Poster !== "N/A" ? result.Poster : "";
 
-            item.innerHTML = `
-                <div class="suggestion-info">
-                    <span class="suggestion-title">${result.Title}</span>
-                    <span class="suggestion-year">${result.Year}${type}</span>
-                </div>
-            `;
+            const posterWrapper = document.createElement("div");
+            posterWrapper.className = "suggestion-poster-wrapper";
+            if (poster) {
+                const posterImg = document.createElement("img");
+                posterImg.className = "suggestion-poster";
+                posterImg.src = poster;
+                posterImg.alt = `${result.Title} poster`;
+                posterWrapper.appendChild(posterImg);
+            } else {
+                const placeholder = document.createElement("div");
+                placeholder.className = "suggestion-poster suggestion-poster-placeholder";
+                placeholder.textContent = "No Poster";
+                posterWrapper.appendChild(placeholder);
+            }
+
+            const info = document.createElement("div");
+            info.className = "suggestion-info";
+            const title = document.createElement("span");
+            title.className = "suggestion-title";
+            title.textContent = result.Title;
+            const year = document.createElement("span");
+            year.className = "suggestion-year";
+            year.textContent = `${result.Year}${type}`;
+            info.appendChild(title);
+            info.appendChild(year);
+
+            item.appendChild(posterWrapper);
+            item.appendChild(info);
 
             item.addEventListener("click", (event) => this.handleSuggestionClick(event));
             this.suggestionsContainer.appendChild(item);
