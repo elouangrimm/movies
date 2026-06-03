@@ -7,8 +7,12 @@ A minimal, free, and ad-free movie watching application.
 ```
 movies/
 ├── index.html              # Main search page
-├── player.html             # Video player page
+├── player/
+│   └── index.html          # Video player page
 ├── config.js               # Configuration (API keys)
+├── css/                    # Stylesheets
+│   ├── style.css           # Main styles
+│   └── player.css          # Player styles
 ├── js/                     # Modular JavaScript code
 │   ├── analytics/          # Analytics modules
 │   │   └── posthog.js      # PostHog initialization and tracking
@@ -22,8 +26,8 @@ movies/
 │       ├── common.js       # Common utilities (debounce, URL helpers)
 │       ├── storage.js      # LocalStorage service
 │       └── video-sources.js  # Video source configuration
-├── index.js                # Main page initialization
-├── player.js               # Player page initialization
+│   ├── index.js            # Main page initialization
+│   └── player.js           # Player page initialization
 ├── sw.js                   # Service worker for PWA
 └── manifest.json           # PWA manifest
 
