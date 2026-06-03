@@ -149,7 +149,7 @@ class SearchUI {
             });
         }
 
-        let url = `player/?id=${imdbCode}&type=${type}`;
+        let url = `/player/?id=${imdbCode}&type=${type}`;
         if (type === 'series') {
             url += '&season=1&episode=1';
         }

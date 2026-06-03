@@ -52,7 +52,7 @@ class RecentlyWatchedUI {
             }
 
             const queryString = new URLSearchParams(params).toString();
-            card.href = `player/?${queryString}`;
+            card.href = `/player/?${queryString}`;
 
             if (item.poster && item.poster !== "N/A") {
                 const poster = document.createElement("img");
