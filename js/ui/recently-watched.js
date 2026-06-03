@@ -69,14 +69,56 @@ class RecentlyWatchedUI {
 
             const info = document.createElement("div");
             info.className = "history-card-info";
+            
             const titleText = document.createElement("span");
             titleText.className = "history-card-title";
             titleText.textContent = title;
+            
             const yearText = document.createElement("span");
             yearText.className = "history-card-year";
             yearText.textContent = year;
+            
             info.appendChild(titleText);
             info.appendChild(yearText);
+            
+            // Add progress if available
+            if (item.progress && item.progress > 0) {
+                const progressText = document.createElement("span");
+                progressText.className = "history-card-progress-text";
+                progressText.style.display = "block";
+                progressText.style.fontSize = "0.85em";
+                progressText.style.marginTop = "4px";
+                progressText.style.color = "var(--stone-400)";
+                
+                // Format progress nicely
+                let formattedProgress = Math.round(item.progress);
+                progressText.textContent = `${formattedProgress}% completed`;
+                
+                info.appendChild(progressText);
+                
+                // Optional: A little progress bar
+                const progressBarBg = document.createElement("div");
+                progressBarBg.style.width = "100%";
+                progressBarBg.style.height = "4px";
+                progressBarBg.style.backgroundColor = "var(--stone-800)";
+                progressBarBg.style.marginTop = "4px";
+                progressBarBg.style.borderRadius = "2px";
+                
+                const progressBarFill = document.createElement("div");
+                progressBarFill.style.width = `${Math.min(100, Math.max(0, item.progress))}%`;
+                progressBarFill.style.height = "100%";
+                progressBarFill.style.backgroundColor = "var(--accent)";
+                progressBarFill.style.borderRadius = "2px";
+                
+                progressBarBg.appendChild(progressBarFill);
+                info.appendChild(progressBarBg);
+                
+                // Pass it to the player so we can resume
+                params.progress = Math.floor(item.currentTime || 0);
+                const queryStringProgress = new URLSearchParams(params).toString();
+                card.href = `/player/?${queryStringProgress}`;
+            }
+            
             card.appendChild(info);
             cards.appendChild(card);
         });

@@ -1,28 +1,68 @@
 // Player UI Module
-// Handles video player interface and controls
+// Handles video player interface and controls for Vidking
 
 class PlayerUI {
-    constructor(omdbService, storageService, sources) {
+    constructor(omdbService, tmdbService, storageService) {
         this.omdbService = omdbService;
+        this.tmdbService = tmdbService;
         this.storageService = storageService;
-        this.sources = sources;
         
         this.videoPlayer = document.getElementById("video-player");
-        this.sourceButtonsContainer = document.getElementById("source-buttons");
-        this.seriesControls = document.getElementById("series-controls");
-        this.seasonSelect = document.getElementById("season-select");
-        this.episodeSelect = document.getElementById("episode-select");
         
-        this.currentSourceIndex = 0;
         this.currentImdbId = null;
+        this.currentTmdbId = null;
         this.currentType = null;
         this.currentSeason = 1;
         this.currentEpisode = 1;
+        
+        this.title = "Unknown Title";
+        this.poster = "N/A";
+        this.year = undefined;
+
+        this.initMessageListener();
+    }
+
+    initMessageListener() {
+        window.addEventListener("message", (event) => {
+            try {
+                // Log what we receive if needed, but primarily handle updates
+                const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+                
+                // Track progress
+                // Based on Vidking doc: data = {type: "PLAYER_EVENT", data: {...}}
+                // Sometimes directly parsed if the provider wraps it.
+                if (data && data.type === "PLAYER_EVENT" && data.data) {
+                    const eventData = data.data;
+                    
+                    if (eventData.progress !== undefined) {
+                        this.storageService.addToRecentlyWatched({
+                            imdbId: this.currentImdbId,
+                            type: this.currentType,
+                            title: this.title,
+                            year: this.year,
+                            poster: this.poster,
+                            season: eventData.season || this.currentSeason,
+                            episode: eventData.episode || this.currentEpisode,
+                            progress: eventData.progress,
+                            currentTime: eventData.currentTime,
+                            duration: eventData.duration
+                        });
+                        
+                        // Update current season and episode in case they changed inside the iframe
+                        if (eventData.season) this.currentSeason = eventData.season;
+                        if (eventData.episode) this.currentEpisode = eventData.episode;
+                    }
+                }
+            } catch (e) {
+                // Ignore parsing errors for other messages
+            }
+        });
     }
 
     async init() {
         const imdbId = Utils.getUrlParam("id");
         let type = Utils.getUrlParam("type");
+        let progressTime = Utils.getUrlParam("progress");
 
         // Normalize type
         if (type === "series") {
@@ -37,178 +77,85 @@ class PlayerUI {
         this.currentImdbId = imdbId;
         this.currentType = type;
 
+        // Try recovering progress locally if not in URL
+        let existingHistory = null;
+        if (!progressTime || (type === "tv" && Utils.getUrlParam("season") === "1" && Utils.getUrlParam("episode") === "1")) {
+            const history = this.storageService.getRecentlyWatched();
+            existingHistory = history.find(h => h.imdbId === imdbId);
+            
+            if (existingHistory) {
+                if (!progressTime && existingHistory.currentTime && existingHistory.progress < 95) { 
+                    progressTime = existingHistory.currentTime;
+                }
+            }
+        }
+        progressTime = progressTime || 0;
+
         if (type === "tv") {
             this.currentSeason = parseInt(Utils.getUrlParam("season")) || 1;
             this.currentEpisode = parseInt(Utils.getUrlParam("episode")) || 1;
             
-            this.seriesControls.style.display = "flex";
-            await this.initializeSeriesControls();
-        } else {
-            await this.initializeMovie();
+            // Override with history if user clicked from search with default season=1, episode=1
+            if (existingHistory && Utils.getUrlParam("season") === "1" && Utils.getUrlParam("episode") === "1") {
+                if (existingHistory.season) this.currentSeason = existingHistory.season;
+                if (existingHistory.episode) this.currentEpisode = existingHistory.episode;
+            }
         }
-    }
 
-    async initializeMovie() {
-        this.generateSourceButtons();
-        const initialUrl = await this.getSourceUrl(this.sources[0]);
-        this.play(initialUrl, 0);
-    }
-
-    async initializeSeriesControls() {
-        const totalSeasons = await this.omdbService.getTotalSeasons(this.currentImdbId);
-        this.populateSeasons(totalSeasons);
-
-        this.seasonSelect.addEventListener("change", async () => {
-            this.currentSeason = parseInt(this.seasonSelect.value);
-            await this.populateEpisodes();
-        });
-
-        this.episodeSelect.addEventListener("change", () => {
-            this.currentEpisode = parseInt(this.episodeSelect.value);
-            this.updatePlayerSource();
-        });
-
-        // Set initial season and populate episodes
-        this.seasonSelect.value = this.currentSeason;
-        await this.populateEpisodes();
-        this.episodeSelect.value = this.currentEpisode;
-        
-        // Initialize player
-        this.updatePlayerSource();
-    }
-
-    populateSeasons(totalSeasons) {
-        this.seasonSelect.innerHTML = "";
-        for (let i = 1; i <= totalSeasons; i++) {
-            const option = document.createElement("option");
-            option.value = i;
-            option.innerText = `Season ${i}`;
-            this.seasonSelect.appendChild(option);
-        }
-    }
-
-    async populateEpisodes() {
+        // Fetch details for storage
         try {
-            const episodes = await this.omdbService.getSeasonEpisodes(
-                this.currentImdbId, 
-                this.currentSeason
-            );
-
-            this.episodeSelect.innerHTML = "";
-            
-            if (episodes && Array.isArray(episodes)) {
-                episodes.forEach(episode => {
-                    const option = document.createElement("option");
-                    option.value = episode.Episode;
-                    const title = episode.Title && episode.Title !== "N/A" ? `: ${episode.Title}` : "";
-                    option.innerText = `Episode ${episode.Episode}${title}`;
-                    this.episodeSelect.appendChild(option);
-                });
+            const details = await this.omdbService.getDetails(this.currentImdbId);
+            if (details) {
+                this.title = details.Title || "Unknown Title";
+                this.poster = details.Poster;
+                this.year = details.Year;
             }
-        } catch (error) {
-            console.error("Error populating episodes:", error);
-        }
-    }
+        } catch (e) {}
 
-    async updatePlayerSource() {
-        this.generateSourceButtons();
-        const initialUrl = await this.getSourceUrl(this.sources[0]);
-        this.play(initialUrl, 0);
-    }
-
-    generateSourceButtons() {
-        this.sourceButtonsContainer.innerHTML = "";
+        // Fetch TMDB ID to use with Vidking
+        this.currentTmdbId = await this.tmdbService.getTmdbId(this.currentImdbId, this.currentType);
         
-        this.sources.forEach((source, index) => {
-            if (source[this.currentType]) {
-                const button = document.createElement("button");
-                button.className = "source-button";
-                button.innerText = source.name;
-                button.onclick = async () => {
-                    const url = await this.getSourceUrl(source);
-                    this.play(url, index);
-                };
-                this.sourceButtonsContainer.appendChild(button);
-            }
-        });
-    }
-
-    async getSourceUrl(source) {
-        let url;
-        
-        if (source.is_special) {
-            try {
-                const fetchUrl = source[this.currentType]
-                    .replace("{imdb_id}", this.currentImdbId)
-                    .replace("{season}", this.currentSeason)
-                    .replace("{episode}", this.currentEpisode);
-                
-                const response = await fetch(fetchUrl);
-                const text = await response.text();
-                const doc = new DOMParser().parseFromString(text, "text/html");
-                url = doc.querySelector("iframe").src;
-            } catch (error) {
-                console.error("Error fetching special source URL:", error);
-                return null;
-            }
-        } else {
-            if (source[this.currentType]) {
-                url = source[this.currentType]
-                    .replace("{imdb_id}", this.currentImdbId)
-                    .replace("{season}", this.currentSeason)
-                    .replace("{episode}", this.currentEpisode);
-            }
-        }
-        
-        return url;
-    }
-
-    async play(url, index) {
-        if (!url) {
-            console.error("No URL provided for playback");
+        if (!this.currentTmdbId) {
+            console.error("Could not resolve TMDB ID from IMDB ID", this.currentImdbId);
+            this.showError("Could not find TMDB ID for this content.");
             return;
         }
 
-        this.videoPlayer.src = url;
-        this.currentSourceIndex = index;
-
-        // Update button states
-        const buttons = this.sourceButtonsContainer.querySelectorAll(".source-button");
-        buttons.forEach((button, i) => {
-            if (i === index) {
-                button.classList.add("active");
-            } else {
-                button.classList.remove("active");
-            }
-        });
-
-        // Save to recently watched
-        await this.saveToRecentlyWatched();
-    }
-
-    async saveToRecentlyWatched() {
-        try {
-            const details = await this.omdbService.getDetails(this.currentImdbId);
-            
-            this.storageService.addToRecentlyWatched({
-                imdbId: this.currentImdbId,
-                type: this.currentType,
-                title: details.Title || "Unknown Title",
-                year: details.Year,
-                poster: details.Poster,
-                season: this.currentType === "tv" ? this.currentSeason : undefined,
-                episode: this.currentType === "tv" ? this.currentEpisode : undefined
-            });
-        } catch (error) {
-            console.error("Error saving to recently watched:", error);
+        // Build Vidking URL
+        let url = "";
+        if (this.currentType === "tv") {
+            url = `https://www.vidking.net/embed/tv/${this.currentTmdbId}/${this.currentSeason}/${this.currentEpisode}?autoPlay=true&episodeSelector=true&nextEpisode=true`;
+        } else {
+            url = `https://www.vidking.net/embed/movie/${this.currentTmdbId}?autoPlay=true`;
         }
+        
+        if (progressTime && progressTime > 0) {
+            url += `&progress=${progressTime}`;
+        }
+
+        // Setup Player
+        this.videoPlayer.src = url;
+        
+        // Save initial to recent list
+        this.storageService.addToRecentlyWatched({
+            imdbId: this.currentImdbId,
+            type: this.currentType,
+            title: this.title,
+            year: this.year,
+            poster: this.poster,
+            season: this.currentSeason,
+            episode: this.currentEpisode,
+            progress: 0,
+            currentTime: progressTime,
+            duration: 0
+        });
     }
 
-    showError() {
+    showError(msg = "Error: No movie or TV show ID provided.") {
         document.body.innerHTML = `
             <div style="text-align: center; padding-top: 50px;">
-                <h1>Error: No movie or TV show ID provided.</h1>
-                <a href="index.html" style="font-size: 1.2rem;">Back Home</a>
+                <h1>${msg}</h1>
+                <a href="../" style="font-size: 1.2rem; color: #fff;">Back Home</a>
             </div>
         `;
     }
