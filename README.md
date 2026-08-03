@@ -1,5 +1,7 @@
 # movies
 
+## this website is just not as good as other options, so please go to fmhy.net for more awesome streaming sites
+
 A minimal, free, and ad-free movie watching application.
 
 ## Project Structure
