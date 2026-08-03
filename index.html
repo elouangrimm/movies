@@ -6,49 +6,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
   <title>Movies | elouan.xyz</title>
-  
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/elouangrimm/elouan.xyz@main/styles/style.css" />
   <link rel="stylesheet" href="css/style.css">
   <link rel="manifest" href="manifest.json">
+  <style>
+    .notice {
+      width: min(800px, 100%);
+      border: 1px solid var(--border-strong);
+      padding: 24px;
+      background: var(--bg-raised);
+      display: grid;
+      gap: 14px;
+    }
+
+    ul {
+      padding-left: 20px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .continue {
+      margin-top: 10px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      gap: 8px;
+    }
+  </style>
 </head>
 
 <body>
   <h1>Movies | <a href="https://elouan.xyz">elouan.xyz</a></h1>
-  <h3>Watch movies for free!</h3>
-  <div class="search-container">
-    <input type="text" id="movieSearch" placeholder="Search for a movie or TV show...">
-    <div id="suggestions" class="suggestions-container"></div>
-  </div>
-  <div id="recently-watched"></div>
-  
-  <!-- PostHog Analytics -->
-  <script src="js/analytics/posthog.js"></script>
-  
-  <!-- Configuration -->
-  <script src="config.js"></script>
-  
-  <!-- Utilities -->
-  <script src="js/utils/common.js"></script>
-  <script src="js/utils/storage.js"></script>
-  
-  <!-- API Services -->
-  <script src="js/api/omdb.js"></script>
-  
-  <!-- UI Components -->
-  <script src="js/ui/search.js"></script>
-  <script src="js/ui/recently-watched.js"></script>
-  
-  <!-- Main initialization -->
-  <script src="js/index.js"></script>
-  
-  <!-- Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js');
-      });
-    }
-  </script>
+  <h3>This site is now soft-deprecated.</h3>
+
+  <section class="notice">
+    <p>
+      For the most up-to-date safe streaming links, use
+      <a href="https://fmhy.pages.dev/video#streaming-sites" rel="noopener noreferrer" target="_blank">FMHY streaming sites</a>.
+    </p>
+    <p>
+      Install <a href="https://ublockorigin.com/" rel="noopener noreferrer" target="_blank">uBlock Origin</a> to reduce popups and ads.
+    </p>
+
+    <p>
+      Current recommendations (temporary):
+    </p>
+    <ul>
+      <li><a href="https://cineby.at" rel="noopener noreferrer" target="_blank">cineby.at</a></li>
+      <li><a href="https://bcine.ru" rel="noopener noreferrer" target="_blank">bcine.ru</a></li>
+      <li><a href="https://67movies.nl" rel="noopener noreferrer" target="_blank">67movies.nl</a></li>
+    </ul>
+    <p>
+      These are only trusted for now and may become dangerous later, so always re-check FMHY.
+    </p>
+
+    <div class="continue">
+      <p>Want to continue anyway?</p>
+      <p><a href="/legacy-home.html">Open the original homepage</a> (search and play still work there).</p>
+    </div>
+  </section>
 </body>
 
 </html>

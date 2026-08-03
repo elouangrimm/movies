@@ -6,7 +6,8 @@ A minimal, free, and ad-free movie watching application.
 
 ```
 movies/
-├── index.html              # Main search page
+├── index.html              # Soft-deprecation landing page
+├── legacy-home.html        # Original search page
 ├── player/
 │   └── index.html          # Video player page
 ├── config.js               # Configuration (API keys)
