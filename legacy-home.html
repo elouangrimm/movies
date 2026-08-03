@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>Movies | elouan.xyz</title>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/elouangrimm/elouan.xyz@main/styles/style.css" />
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+  <h1>Movies | <a href="https://elouan.xyz">elouan.xyz</a></h1>
+  <h3>Watch movies for free!</h3>
+  <div class="search-container">
+    <input type="text" id="movieSearch" placeholder="Search for a movie or TV show...">
+    <div id="suggestions" class="suggestions-container"></div>
+  </div>
+  <div id="recently-watched"></div>
+  
+  <!-- PostHog Analytics -->
+  <script src="js/analytics/posthog.js"></script>
+  
+  <!-- Configuration -->
+  <script src="config.js"></script>
+  
+  <!-- Utilities -->
+  <script src="js/utils/common.js"></script>
+  <script src="js/utils/storage.js"></script>
+  
+  <!-- API Services -->
+  <script src="js/api/omdb.js"></script>
+  
+  <!-- UI Components -->
+  <script src="js/ui/search.js"></script>
+  <script src="js/ui/recently-watched.js"></script>
+  
+  <!-- Main initialization -->
+  <script src="js/index.js"></script>
+  
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+      });
+    }
+  </script>
+</body>
+
+</html>
